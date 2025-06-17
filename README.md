@@ -42,5 +42,5 @@ Otto is a custom-built React application that allows surfers to stay on top of t
 
 ```bash
 git clone https://github.com/yourusername/otto.git
-cd otto
+cd otto-backend
 ```
