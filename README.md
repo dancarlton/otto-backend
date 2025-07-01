@@ -1,46 +1,27 @@
-# 🌊 Otto – Your Personalized Surf Reporter
+# 🧠 Otto Backend – API Reference
 
-Otto is a custom-built React application that allows surfers to stay on top of the best wave conditions based on their personal preferences. Whether you're chasing morning glass or avoiding choppy onshore winds, Otto notifies you when the surf is just right near you.
-
-## 📦 Stack
-
-- **Frontend:** React (with React Router)
-- **Backend:** Node.js + Express
-- **Database:** MongoDB
-- **Auth:** JWT
-- **Notifications:** Firebase Cloud Messaging
+> This document outlines the API endpoints and upcoming feature roadmap for Otto AI's backend.
 
 ---
 
-## 🔌 APIs Used
+## 📬 API Endpoints
 
-- **[OpenAI API](https://platform.openai.com/docs)**  
-  Used to generate personalized surf reports based on each user's saved preferences using GPT-4o.  
-  - Token usage is tracked per user
-  - A free limit is enforced unless the user upgrades to Pro
-
-- **[Stormglass.io](https://stormglass.io/)** *(Planned for future release)*  
-  Will be used for real-time marine weather data like wave height, tide, and wind direction.  
-  - Currently excluded from the MVP due to pricing
-
----
-
-## 🚀 Features
-
-- 🌐 User registration and login (JWT)
-- 🌊 Surf preference setup (ideal wave height, wind, swell, tide, etc.)
-- 📍 Favorite surf spots by location
-- 📡 Real-time surf forecast using Stormglass API
-- 🔔 Push notifications when conditions match preferences
-- 🧠 Optional GPT integration for surf spot suggestions (coming soon)
+| Method | Endpoint               | Description                           |
+|--------|------------------------|---------------------------------------|
+| POST   | `/api/users/register`  | Register a new user                   |
+| POST   | `/api/users/login`     | Authenticate user and return JWT      |
+| GET    | `/api/preferences`     | Get the logged-in user's preferences  |
+| POST   | `/api/preferences`     | Save or update user surf preferences  |
+| GET    | `/api/forecast`        | Generate a GPT-based surf forecast    |
 
 ---
 
-## 🧪 Getting Started
+## 🧠 Future Plans
 
-### 1. Clone the repo
-
-```bash
-git clone https://github.com/yourusername/otto.git
-cd otto-backend
-```
+- 🌊 Integrate buoy data from the National Data Buoy Center
+- 📍 Map buoy stations to user-selected surf spots
+- 📈 Track and enforce GPT token usage per user
+- 💳 Add Pro subscription tier with usage limits
+- 📡 Send push notifications via Firebase when surf matches preferences
+- 🛠 Admin dashboard for managing users and analytics
+- 🔒 Add refresh tokens and secure session management
