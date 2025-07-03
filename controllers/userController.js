@@ -76,7 +76,7 @@ exports.register = async (req, res) => {
 //patch /users/update
 exports.updateUser = async (req, res) => {
   try {
-    const userId = req.user._id
+    const userId = req.user.id
     const { name, email, password, preferences } = req.body
     const updatedFields = {}
     if (name) updatedFields.name = name
