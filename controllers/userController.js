@@ -2,6 +2,48 @@ const User = require('../models/Users')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
+// GET /users
+exports.login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: 'Email and password are required' })
+    }
+
+    const user = await User.findOne({ email })
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' })
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password)
+
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid email or password' })
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '7d',
+    })
+
+    res.status(200).json({
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        preferences: user.preferences || {},
+      },
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Server error' })
+  }
+}
+
 // POST /users/register
 exports.register = async (req, res) => {
   try {
@@ -15,13 +57,16 @@ exports.register = async (req, res) => {
 
     const newUser = await User.create({ name, email, password: hashedPassword })
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ _id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: '7d',
     })
 
     res
       .status(201)
-      .json({ user: { id: newUser._id, email: newUser.email }, token })
+      .json({
+        user: { _id: newUser._id, name: newUser.name, email: newUser.email },
+        token,
+      })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Server error' })
@@ -31,7 +76,7 @@ exports.register = async (req, res) => {
 //patch /users/update
 exports.updateUser = async (req, res) => {
   try {
-    const userId = req.user.id
+    const userId = req.user._id
     const { name, email, password, preferences } = req.body
     const updatedFields = {}
     if (name) updatedFields.name = name
