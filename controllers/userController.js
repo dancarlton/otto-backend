@@ -37,17 +37,43 @@ exports.updateUser = async (req, res) => {
     if (name) updatedFields.name = name
     if (email) updatedFields.email = email
     if (password) updatedFields.password = password
-    if (preferences) updatedFields.preferences = preferences
+    if (preferences) {
+      const cleanedPreferences = { ...preferences }
+
+      if (cleanedPreferences.shredderLevel) {
+        const value = cleanedPreferences.shredderLevel
+        cleanedPreferences.shredderLevel = Array.isArray(value)
+          ? value[0]
+          : value
+      }
+
+      if (cleanedPreferences.notifications) {
+        let value = cleanedPreferences.notifications
+        const normalized = Array.isArray(value) ? value[0] : value
+
+        if (normalized === 'Maybe so' || normalized === 'Yes') {
+          value = true
+        } else {
+          value = false
+        }
+
+        cleanedPreferences.notifications = value
+      }
+
+      updatedFields.preferences = cleanedPreferences
+    }
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { $set: updatedFields },
       { new: true }
     )
+
+    console.log('Updated user:', updatedUser)
+
     res.status(200).json({ message: 'User updated', user: updatedUser })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Server error' })
   }
 }
-

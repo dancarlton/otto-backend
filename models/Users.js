@@ -8,11 +8,11 @@ const userSchema = new mongoose.Schema(
 
     preferences: {
       shredderLevel: { type: String },
-      waveHeight: { type: String },
+      waveHeight: [{ type: String }],
       gear: {
-        boards: { type: String },
-        wetsuits: { type: String },
-        fins: { type: String },
+        boards: [{ type: String }],
+        wetsuits: [{ type: String }],
+        fins: [{ type: String }],
       },
       notifications: { type: String },
     },
