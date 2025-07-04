@@ -2,7 +2,7 @@ const User = require('../models/Users')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-// GET /users
+// POST /users
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body
@@ -57,7 +57,7 @@ exports.register = async (req, res) => {
 
     const newUser = await User.create({ name, email, password: hashedPassword })
 
-    const token = jwt.sign({ _id: newUser._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: '7d',
     })
 
@@ -73,7 +73,24 @@ exports.register = async (req, res) => {
   }
 }
 
-//patch /users/update
+//GET /users/me
+exports.getUser = async (req, res) => {
+  try {
+    console.log(req.user)
+    const user = await User.findById(req.user.id)
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    res.status(200).json(user)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Server error' })
+  }
+}
+
+//PATCH /users/update
 exports.updateUser = async (req, res) => {
   try {
     const userId = req.user.id
