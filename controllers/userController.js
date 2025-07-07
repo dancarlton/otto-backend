@@ -76,7 +76,7 @@ exports.register = async (req, res) => {
 //GET /users/me
 exports.getUser = async (req, res) => {
   try {
-    console.log(req.user)
+    console.log('Fetching user:', req.user)
     const user = await User.findById(req.user.id)
 
     if (!user) {
