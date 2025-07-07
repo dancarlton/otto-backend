@@ -8,33 +8,40 @@ const openai = new OpenAI({
 exports.askOtto = async (req, res) => {
   try {
     const user = await User.findById(req.user.id)
-    const preferences = user.preferences
     const userMessage = req.body.message
+    const preferences = user.preferences
+    const gearList = Array.isArray(preferences.gear)
+      ? preferences.gear.join(', ')
+      : preferences.gear || 'unknown'
 
     const prompt = `
-        You are Otto, a surf forecast assistant.
+        You are Otto, a surf forecasting assistant.
+
         User preferences:
-        - Wave Height: ${preferences.waveHeight}
-        - Gear: ${JSON.stringify(preferences.gear)}
-        - Skill Level: ${preferences.shredderLevel}
+        - Wave: ${preferences.waveHeight}
+        - Gear: ${gearList}
+        - Skill: ${preferences.shredderLevel}
 
-        User asks: "${userMessage}"
+        User said: "${userMessage}"
 
-        Respond in natural language, and include a JSON block like:
+        Instructions:
+        - If the user mentions a location (e.g. San Diego), suggest a known nearby California surf spot (e.g. Blacks, Cardiff, La Jolla).
+        - Match wave height, wind, tide, and skill level.
+        - Respond briefly, then return JSON:
 
         <JSON>
         {
         "recommendations": [
             {
-            "spot": "Trestles",
-            "bestTime": "6 AM",
-            "conditions": "3-5 ft, offshore",
-            "gear": "Shortboard"
+            "spot": "Cardiff Reef",
+            "bestTime": "7 AM",
+            "conditions": "3-4 ft, offshore",
+            "gear": "Fish"
             }
         ]
         }
         </JSON>
-            `
+        `
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
@@ -42,6 +49,8 @@ exports.askOtto = async (req, res) => {
     })
 
     const rawReply = completion.choices[0].message.content
+
+    console.log('GPT raw reply:', rawReply)
 
     const jsonMatch = rawReply.match(/<JSON>([\s\S]*?)<\/JSON>/)
     let forecast = []

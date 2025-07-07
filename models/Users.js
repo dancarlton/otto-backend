@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema(
         wetsuits: [{ type: String }],
         fins: [{ type: String }],
       },
+      travelDistance: [{ type: String }],
       notifications: { type: String },
     },
   },
