@@ -1,9 +1,10 @@
 const findNearestBuoy = require('../utils/findNearestBuoy')
+const fetchNDBCRss = require('../utils/parseNDBC')
 const BadRequestError = require('../errors/BadRequestError')
 const NotFoundError = require('../errors/NotFoundError')
 
 // return closest buoy for a given lat/lng
-async function getNearestBuoy(req, res, next) {
+exports.getNearestBuoy = async (req, res, next) => {
   try {
     const { lat, lng } = req.query
 
@@ -11,10 +12,8 @@ async function getNearestBuoy(req, res, next) {
       throw new BadRequestError('Latitude and longitude are required')
     }
 
-    // find nearest buoy from surf spots
     const buoy = await findNearestBuoy(parseFloat(lat), parseFloat(lng))
 
-    // if nothing return 404
     if (!buoy) {
       throw new NotFoundError('No buoy found nearby')
     }
@@ -25,4 +24,13 @@ async function getNearestBuoy(req, res, next) {
   }
 }
 
-module.exports = { getNearestBuoy }
+// get latest buoy data for a station
+exports.getBuoyData = async (req, res, next) => {
+  try {
+    const { stationId } = req.params
+    const data = await fetchNDBCRss(stationId)
+    res.json({ stationId, data })
+  } catch (err) {
+    next(err)
+  }
+}

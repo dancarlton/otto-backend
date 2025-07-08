@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema(
       travelDistance: [{ type: String }],
       notifications: { type: String },
     },
+    gptUsage: {
+      count: { type: Number, default: 0 },
+      lastUsed: { type: Date, default: null },
+    },
   },
 
   { timestamps: true }
