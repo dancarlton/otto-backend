@@ -7,9 +7,10 @@ const {
   getUser,
 } = require('../controllers/userController')
 const auth = require('../middleware/auth')
+const { validateUserLogin, validateUserRegister } = require( '../middleware/validation' )
 
-router.post('/login', login)
-router.post('/register', register)
+router.post('/login', validateUserLogin, login)
+router.post('/register', validateUserRegister, register)
 router.get('/me', auth, getUser)
 router.patch('/update', auth, updateUser)
 
