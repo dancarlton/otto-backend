@@ -1,0 +1,182 @@
+[
+  {
+    "spot": "Trestles",
+    "location": "San Clemente, CA",
+    "lat": 33.3803,
+    "lon": -117.5928,
+    "stationId": "46224",
+    "stationName": "San Clemente Basin",
+    "distanceFromShoreMiles": 13
+  },
+  {
+    "spot": "Malibu",
+    "location": "Malibu, CA",
+    "lat": 34.0330,
+    "lon": -118.6786,
+    "stationId": "46221",
+    "stationName": "Santa Monica Basin",
+    "distanceFromShoreMiles": 18
+  },
+  {
+    "spot": "Huntington Beach Pier",
+    "location": "Huntington Beach, CA",
+    "lat": 33.6525,
+    "lon": -118.0000,
+    "stationId": "46222",
+    "stationName": "Harvest Platform",
+    "distanceFromShoreMiles": 10
+  },
+  {
+    "spot": "Rincon",
+    "location": "Carpinteria, CA",
+    "lat": 34.3731,
+    "lon": -119.4783,
+    "stationId": "46053",
+    "stationName": "East Santa Barbara Channel",
+    "distanceFromShoreMiles": 10
+  },
+  {
+    "spot": "Ocean Beach",
+    "location": "San Francisco, CA",
+    "lat": 37.7599,
+    "lon": -122.5136,
+    "stationId": "46026",
+    "stationName": "San Francisco Bar",
+    "distanceFromShoreMiles": 18
+  },
+  {
+    "spot": "Mavericks",
+    "location": "Half Moon Bay, CA",
+    "lat": 37.4922,
+    "lon": -122.4966,
+    "stationId": "46012",
+    "stationName": "Half Moon Bay",
+    "distanceFromShoreMiles": 12
+  },
+  {
+    "spot": "Steamer Lane",
+    "location": "Santa Cruz, CA",
+    "lat": 36.9511,
+    "lon": -122.0251,
+    "stationId": "46042",
+    "stationName": "Monterey Bay",
+    "distanceFromShoreMiles": 26
+  },
+  {
+    "spot": "Pismo Beach",
+    "location": "Pismo Beach, CA",
+    "lat": 35.1428,
+    "lon": -120.6413,
+    "stationId": "46215",
+    "stationName": "Harvest Platform",
+    "distanceFromShoreMiles": 45
+  },
+  {
+    "spot": "Swami’s",
+    "location": "Encinitas, CA",
+    "lat": 33.0352,
+    "lon": -117.2926,
+    "stationId": "46224",
+    "stationName": "San Clemente Basin",
+    "distanceFromShoreMiles": 13
+  },
+  {
+    "spot": "Cardiff Reef",
+    "location": "Cardiff, CA",
+    "lat": 33.0161,
+    "lon": -117.2797,
+    "stationId": "46224",
+    "stationName": "San Clemente Basin",
+    "distanceFromShoreMiles": 13
+  },
+  {
+    "spot": "Black’s Beach",
+    "location": "La Jolla, CA",
+    "lat": 32.8862,
+    "lon": -117.2526,
+    "stationId": "46232",
+    "stationName": "Point Loma South",
+    "distanceFromShoreMiles": 15
+  },
+  {
+    "spot": "Windansea",
+    "location": "La Jolla, CA",
+    "lat": 32.8283,
+    "lon": -117.2825,
+    "stationId": "46232",
+    "stationName": "Point Loma South",
+    "distanceFromShoreMiles": 15
+  },
+  {
+    "spot": "The Wedge",
+    "location": "Newport Beach, CA",
+    "lat": 33.5933,
+    "lon": -117.8750,
+    "stationId": "46223",
+    "stationName": "Harvest East",
+    "distanceFromShoreMiles": 12
+  },
+  {
+    "spot": "Bolsa Chica",
+    "location": "Huntington Beach, CA",
+    "lat": 33.6935,
+    "lon": -118.0455,
+    "stationId": "46222",
+    "stationName": "Harvest Platform",
+    "distanceFromShoreMiles": 10
+  },
+  {
+    "spot": "Salt Creek",
+    "location": "Dana Point, CA",
+    "lat": 33.4668,
+    "lon": -117.7122,
+    "stationId": "46224",
+    "stationName": "San Clemente Basin",
+    "distanceFromShoreMiles": 13
+  },
+  {
+    "spot": "El Porto",
+    "location": "Manhattan Beach, CA",
+    "lat": 33.9004,
+    "lon": -118.4256,
+    "stationId": "46221",
+    "stationName": "Santa Monica Basin",
+    "distanceFromShoreMiles": 18
+  },
+  {
+    "spot": "Doheny State Beach",
+    "location": "Dana Point, CA",
+    "lat": 33.4585,
+    "lon": -117.6731,
+    "stationId": "46224",
+    "stationName": "San Clemente Basin",
+    "distanceFromShoreMiles": 13
+  },
+  {
+    "spot": "Ventura Point",
+    "location": "Ventura, CA",
+    "lat": 34.2754,
+    "lon": -119.2939,
+    "stationId": "46053",
+    "stationName": "East Santa Barbara Channel",
+    "distanceFromShoreMiles": 10
+  },
+  {
+    "spot": "Oceanside Harbor",
+    "location": "Oceanside, CA",
+    "lat": 33.1931,
+    "lon": -117.3823,
+    "stationId": "46224",
+    "stationName": "San Clemente Basin",
+    "distanceFromShoreMiles": 13
+  },
+  {
+    "spot": "La Jolla Shores",
+    "location": "La Jolla, CA",
+    "lat": 32.8550,
+    "lon": -117.2570,
+    "stationId": "46232",
+    "stationName": "Point Loma South",
+    "distanceFromShoreMiles": 15
+  }
+]

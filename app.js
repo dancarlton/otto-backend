@@ -1,17 +1,21 @@
 const express = require('express')
 const cors = require('cors')
+const helmet = require('helmet')
+require('dotenv').config()
 
 const app = express()
 
+// middleware
 app.use(cors())
 app.use(express.json())
+app.use(helmet())
 
-// userRoutes
-const userRoutes = require('./routes/userRoutes')
-app.use('/api/users', userRoutes)
+// routes
+const routes = require('./routes')
+app.use('/api', routes)
 
-// gptRoutes
-const gptRoutes = require('./routes/gptRoutes')
-app.use('/api/gpt', gptRoutes)
+// error handler (should come after all routes)
+const errorHandler = require('./middleware/errorHandler')
+app.use(errorHandler)
 
 module.exports = app
