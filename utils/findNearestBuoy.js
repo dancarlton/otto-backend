@@ -1,35 +1,40 @@
+
+const { getActiveStations } = require('./parseActiveStations')
 const { haversineDistance } = require('./geo')
-const SurfSpot = require('../models/SurfSpots')
+const axios = require('axios')
+
+async function buoyFeedExists(stationId) {
+  const url = `https://www.ndbc.noaa.gov/data/latest_obs/${stationId}.rss`
+  console.log(`Checking RSS feed for ${stationId}`)
+  try {
+    const res = await axios.head(url)
+    return res.status === 200
+  } catch (err) {
+    console.warn(`Feed not found for ${stationId}`)
+    return false
+  }
+}
 
 async function findNearestBuoy(lat, lng) {
-  // get all spots
-  const spots = await SurfSpot.find({})
+  const stations = getActiveStations() // use buoy stations, not surf spots
 
-  // set closest buoy tracker
   let nearest = null
   let minDistance = Infinity
 
-  // loop through each spot
-  for (let spot of spots) {
-    const buoy = spot.buoy
-    if (!buoy || !spot.location) continue
+  // loop through all buoy stations to find the closest one
+  for (let station of stations) {
+    const distance = haversineDistance(lat, lng, station.lat, station.lng)
+    if (distance > 100) continue  // skips distant locations
 
-    // calculate distance from user to spot
-    const distance = haversineDistance(
-      lat,
-      lng,
-      spot.location.lat,
-      spot.location.lng
-    )
+    const hasFeed = await buoyFeedExists(station.id)
 
-    // if closer than previous, save as nearest
-    if (distance < minDistance) {
+    if (hasFeed && distance < minDistance) {
       minDistance = distance
-      nearest = buoy
+      nearest = station
     }
   }
 
-  // return closest buoy
+  // return the nearest buoy station (id, lat, lon, name)
   return nearest
 }
 

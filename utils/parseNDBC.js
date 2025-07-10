@@ -32,8 +32,10 @@ async function fetchNDBCRss(stationId) {
     return data
   } catch (err) {
     // Log and rethrow any errors
-    console.error('Failed to fetch or parse NDBC RSS:', err.message)
-    throw err
+    if (err.response?.status === 404) {
+      console.warn(`RSS feed not found for station ${stationId}`)
+      return null // gracefully handle in controller
+    }
   }
 }
 

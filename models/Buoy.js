@@ -14,6 +14,7 @@ const buoySchema = new mongoose.Schema({
     windSpeed: Number, // WSPD
     windDirection: String,
     waterTemp: Number, // WTMP
+    dominantPeriod: Number,
   },
 })
 

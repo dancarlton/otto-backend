@@ -4,6 +4,7 @@ const surfSpotSchema = new mongoose.Schema(
   {
     id: { type: String, required: true, unique: true },
     name: { type: String, required: true },
+    imageUrl: {type: String},
     location: {
       region: { type: String }, // city/state/
       lat: { type: Number },

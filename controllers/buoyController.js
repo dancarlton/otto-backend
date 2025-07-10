@@ -29,6 +29,11 @@ exports.getBuoyData = async (req, res, next) => {
   try {
     const { stationId } = req.params
     const data = await fetchNDBCRss(stationId)
+
+    if(!data) {
+      throw new NotFoundError(`Not data available for buoy ${stationId}`)
+    }
+
     res.json({ stationId, data })
   } catch (err) {
     next(err)
