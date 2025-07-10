@@ -18,4 +18,10 @@ app.use('/api', routes)
 const errorHandler = require('./middleware/errorHandler')
 app.use(errorHandler)
 
+// load active buoy stations on startup
+const { loadActiveStations } = require('./utils/parseActiveStations')
+loadActiveStations()
+  .then(() => console.log('✅ Buoy station list loaded'))
+  .catch(err => console.error('❌ Failed to load buoy stations:', err))
+
 module.exports = app
