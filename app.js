@@ -19,7 +19,7 @@ const errorHandler = require('./middleware/errorHandler')
 app.use(errorHandler)
 
 // load active buoy stations on startup
-const { loadActiveStations } = require('./utils/parseActiveStations')
+const { loadActiveStations } = require('./utils/findNearbyRSSStations')
 loadActiveStations()
   .then(() => console.log('✅ Buoy station list loaded'))
   .catch(err => console.error('❌ Failed to load buoy stations:', err))
