@@ -1,9 +1,3 @@
-// try to enrich a surf spot with buoy data and image
-// 1. try fetching buoy data using existing stationId
-// 2. if missing or invalid, find nearest active buoy and assign it to spot
-// 3. if imageUrl is missing, fetch an image and save it
-// 4. return spot object + buoy data
-
 const fetchNDBCRss = require('./parseNDBC')
 const findNearestBuoy = require('./findNearestBuoy')
 const fetchUnsplashImage = require('./fetchUnsplashImage')
@@ -11,33 +5,39 @@ const fetchUnsplashImage = require('./fetchUnsplashImage')
 async function enrichSurfSpot(spot) {
   let buoyData = null
 
-  // try existing buoy data
+  // Try existing buoy stationId
   if (spot.buoy?.stationId) {
     buoyData = await fetchNDBCRss(spot.buoy.stationId)
   }
 
-  // find nearest buoy if data is missing
+  // Find nearest buoy if none or invalid
   if (!buoyData) {
     const nearest = await findNearestBuoy(spot.location.lat, spot.location.lng)
 
     if (nearest) {
       console.log(
-        `[updated] ${spot.name} → buoy.stationId set to ${nearest.id} (${nearest.name || 'unknown'})`
+        `[updated] ${spot.name} → buoy.stationId set to ${nearest.stationId} (${nearest.name || 'unknown'})`
       )
 
-      // set buoy fields correctly according to schema
-      spot.buoy.stationId = nearest.id
-      spot.buoy.stationName = nearest.name
+      // Ensure spot.buoy exists
+      if (!spot.buoy) {
+        spot.buoy = {}
+      }
 
-      // save updated buoy info
+      // Update with nearest buoy info
+      spot.buoy.stationId = nearest.stationId
+      spot.buoy.stationName = nearest.name
+      spot.buoy.lat = nearest.lat
+      spot.buoy.lng = nearest.lng
+
       await spot.save()
 
-      // fetch buoy data from new station
-      buoyData = await fetchNDBCRss(nearest.id)
+      // Try fetching data again
+      buoyData = await fetchNDBCRss(nearest.stationId)
     }
   }
 
-  // fetch unsplash image if not already set
+  // Add Unsplash image if missing
   if (!spot.imageUrl) {
     const imageUrl = await fetchUnsplashImage(spot.name)
     if (imageUrl) {
@@ -46,7 +46,6 @@ async function enrichSurfSpot(spot) {
     }
   }
 
-  // return enriched object
   return { ...spot.toObject(), buoyData }
 }
 

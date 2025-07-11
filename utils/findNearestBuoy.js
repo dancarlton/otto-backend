@@ -1,40 +1,77 @@
-
-const { getActiveStations } = require('./parseActiveStations')
-const { haversineDistance } = require('./geo')
+const { getActiveStations } = require('./findNearbyRSSStations')
+const haversineDistance = require('./geo')
 const axios = require('axios')
+const cheerio = require('cheerio')
+
+const buoyCache = {}
 
 async function buoyFeedExists(stationId) {
+  if (!stationId) return false
+
+  if (stationId in buoyCache) return buoyCache[stationId]
+
   const url = `https://www.ndbc.noaa.gov/data/latest_obs/${stationId}.rss`
   console.log(`Checking RSS feed for ${stationId}`)
+
   try {
     const res = await axios.head(url)
-    return res.status === 200
+    buoyCache[stationId] = res.status === 200
+    return buoyCache[stationId]
   } catch (err) {
     console.warn(`Feed not found for ${stationId}`)
+    buoyCache[stationId] = false
     return false
   }
 }
 
-async function findNearestBuoy(lat, lng) {
-  const stations = getActiveStations() // use buoy stations, not surf spots
+async function getLatLonFromStationPage(stationId) {
+  try {
+    const url = `https://www.ndbc.noaa.gov/station_page.php?station=${stationId}`
+    const res = await axios.get(url)
+    const $ = cheerio.load(res.data)
+    const text = $.text()
+
+    const latMatch = text.match(/(\d+\.\d+)\s+N/)
+    const lonMatch = text.match(/(\d+\.\d+)\s+W/)
+
+    if (latMatch && lonMatch) {
+      const lat = parseFloat(latMatch[1])
+      const lon = -parseFloat(lonMatch[1])
+      return { lat, lon }
+    }
+
+    return null
+  } catch (err) {
+    console.warn(`❌ Could not scrape lat/lon for station ${stationId}`)
+    return null
+  }
+}
+
+async function findNearestBuoy(lat, lng, allowFallback = true) {
+  const stations = getActiveStations()
 
   let nearest = null
   let minDistance = Infinity
 
-  // loop through all buoy stations to find the closest one
   for (let station of stations) {
+    if (!station.stationId || !station.lat || !station.lng) continue
+
     const distance = haversineDistance(lat, lng, station.lat, station.lng)
-    if (distance > 100) continue  // skips distant locations
+    if (distance > 100) continue
 
-    const hasFeed = await buoyFeedExists(station.id)
-
+    const hasFeed = await buoyFeedExists(station.stationId)
     if (hasFeed && distance < minDistance) {
       minDistance = distance
       nearest = station
     }
   }
 
-  // return the nearest buoy station (id, lat, lon, name)
+  // Fallback: no nearby RSS buoys, try scraping station page of failed station (if fallback allowed)
+  if (!nearest && allowFallback) {
+    console.warn(`⚠️ No valid RSS buoy near (${lat}, ${lng}). Skipping fallback logic here.`)
+    // Optional: you could trigger getLatLonFromStationPage from somewhere else if needed
+  }
+
   return nearest
 }
 
