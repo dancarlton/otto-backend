@@ -1,90 +1,98 @@
-const OpenAI = require('openai')
-const User = require('../models/Users')
-const SurfSpot = require('../models/SurfSpots')
-const enrichSurfSpot = require('../utils/enrichSurfSpots')
-const axios = require('axios')
-const haversineDistance = require('../utils/geo')
-const BadRequestError = require('../errors/BadRequestError')
-const NotFoundError = require('../errors/NotFoundError')
+const OpenAI = require('openai');
+const axios = require('axios');
+const User = require('../models/Users');
+const SurfSpot = require('../models/SurfSpots');
+const enrichSurfSpot = require('../utils/enrichSurfSpots');
+const haversineDistance = require('../utils/geo');
+const BadRequestError = require('../errors/BadRequestError');
+const NotFoundError = require('../errors/NotFoundError');
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // 🔍 Geocode city/region from message
 async function geocodeLocation(locationName) {
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locationName)}&format=json&limit=1`
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+    locationName,
+  )}&format=json&limit=1`;
   const res = await axios.get(url, {
-    headers: { 'User-Agent': 'Otto AI Bot' }
-  })
-  if (!res.data.length) return null
+    headers: { 'User-Agent': 'Otto AI Bot' },
+  });
+  if (!res.data.length) return null;
   return {
     lat: parseFloat(res.data[0].lat),
     lng: parseFloat(res.data[0].lon),
-  }
+  };
 }
 
 // 🧠 Extract location from message using GPT
 async function extractLocationFromMessage(message) {
-  const extractPrompt = `Extract the main California beach city or region from this user message: "${message}". Respond with just the location name, or "none".`
+  const extractPrompt = `Extract the main California beach city or region from this user message: "${message}".`
+    + 'Respond with just the location name, or "none".';
 
   const result = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages: [{ role: 'user', content: extractPrompt }],
-  })
+  });
 
-  const response = result.choices[0].message.content.trim()
-  return response.toLowerCase() === 'none' ? null : response
+  const response = result.choices[0].message.content.trim();
+  return response.toLowerCase() === 'none' ? null : response;
 }
 
 // 📍 Find nearest surf spot from lat/lng
 async function findNearestSurfSpot(lat, lng) {
-  const allSpots = await SurfSpot.find({ 'location.lat': { $exists: true }, 'location.lng': { $exists: true } })
-  let closest = null
-  let minDist = Infinity
+  const allSpots = await SurfSpot.find({
+    'location.lat': { $exists: true },
+    'location.lng': { $exists: true },
+  });
+  let closest = null;
+  let minDist = Infinity;
 
   for (const spot of allSpots) {
-    const d = haversineDistance(lat, lng, spot.location.lat, spot.location.lng)
+    const d = haversineDistance(lat, lng, spot.location.lat, spot.location.lng);
     if (d < minDist) {
-      minDist = d
-      closest = spot
+      minDist = d;
+      closest = spot;
     }
   }
 
-  return closest
+  return closest;
 }
 
 // 🔥 Main GPT controller
 exports.askOtto = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id)
-    if (!user) throw new NotFoundError('User not found')
+    const user = await User.findById(req.user.id);
+    if (!user) throw new NotFoundError('User not found');
 
-    const userMessage = req.body.message
-    if (!userMessage) throw new BadRequestError('Message is required')
+    const userMessage = req.body.message;
+    if (!userMessage) throw new BadRequestError('Message is required');
 
-    const preferences = user.preferences || {}
+    const preferences = user.preferences || {};
     const gearList = Array.isArray(preferences.gear?.boards)
       ? preferences.gear.boards.join(', ')
-      : 'unknown'
+      : 'unknown';
 
-    const locationName = await extractLocationFromMessage(userMessage)
+    const locationName = await extractLocationFromMessage(userMessage);
     if (!locationName) {
       return res.json({
-        reply: `I couldn’t figure out which beach you meant. Try again with a spot or city name like "Malibu" or "Dana Point".`,
+        reply:
+          'I couldn’t figure out which beach you meant. Try with a spot or city name like "Malibu" or "Trestles".',
         forecast: [],
-      })
+      });
     }
 
-    const coords = await geocodeLocation(locationName)
-    if (!coords) throw new Error('Geocoding failed')
+    const coords = await geocodeLocation(locationName);
+    if (!coords) throw new Error('Geocoding failed');
 
-    const nearestSpot = await findNearestSurfSpot(coords.lat, coords.lng)
-    if (!nearestSpot) throw new Error('No surf spot nearby')
+    const nearestSpot = await findNearestSurfSpot(coords.lat, coords.lng);
+    if (!nearestSpot) throw new Error('No surf spot nearby');
 
-    const enrichedSpot = await enrichSurfSpot(nearestSpot)
+    const enrichedSpot = await enrichSurfSpot(nearestSpot);
 
-    const buoy = enrichedSpot.buoyData || {}
+    const buoy = enrichedSpot.buoyData || {};
     const prompt = `
-You are Otto, a surf forecasting assistant for Southern California surfers. Your goal is to suggest local breaks based on real data and match the user’s preferences.
+You are Otto, a surf forecasting assistant for Southern California surfers.
+Your goal is to suggest local breaks based on real data and match the user’s preferences.
 
 If buoy data is missing or limited, you may guess based on general knowledge of the spot.
 
@@ -111,36 +119,38 @@ Respond in a friendly, short tone as if you're texting a buddy who's heading out
     {
       "spot": "${enrichedSpot.name}",
       "bestTime": "6 AM",
-      "conditions": "${buoy.waveHeight || 'unknown'} ft, ${buoy.direction || 'unknown'}",
+      "conditions": "${buoy.waveHeight || 'unknown'} ft, ${
+  buoy.direction || 'unknown'
+}",
       "gear": "${gearList}"
     }
   ]
 }
 </JSON>
-    `
+    `;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }],
-    })
+    });
 
-    const rawReply = completion.choices[0].message.content
-    const jsonMatch = rawReply.match(/<JSON>([\s\S]*?)<\/JSON>/)
-    let forecast = []
+    const rawReply = completion.choices[0].message.content;
+    const jsonMatch = rawReply.match(/<JSON>([\s\S]*?)<\/JSON>/);
+    let forecast = [];
 
     if (jsonMatch) {
       try {
-        forecast = JSON.parse(jsonMatch[1].trim()).recommendations
+        forecast = JSON.parse(jsonMatch[1].trim()).recommendations;
       } catch (e) {
-        console.warn('Could not parse GPT JSON:', e)
+        console.warn('Could not parse GPT JSON:', e);
       }
     }
 
-    const reply = rawReply.replace(/<JSON>[\s\S]*?<\/JSON>/, '').trim()
+    const reply = rawReply.replace(/<JSON>[\s\S]*?<\/JSON>/, '').trim();
 
-    res.json({ reply, forecast })
+    res.json({ reply, forecast });
   } catch (err) {
-    console.error(err)
-    next(err)
+    console.error(err);
+    next(err);
   }
-}
+};

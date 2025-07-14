@@ -1,4 +1,3 @@
-// const SUCCESS = 200
 // const BAD_REQUEST = 400
 // const UNAUTHORIZED = 401
 // const FORBIDDEN = 403
@@ -8,9 +7,9 @@
 
 class UnauthorizedError extends Error {
   constructor(message) {
-    super(message)
-    this.statusCode = 401
+    super(message);
+    this.statusCode = 401;
   }
 }
 
-module.exports = UnauthorizedError
+module.exports = UnauthorizedError;
