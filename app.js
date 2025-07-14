@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const limiter = require('./middleware/rateLimiter');
+
 require('dotenv').config();
 
 const app = express();
@@ -9,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(helmet());
+app.use(limiter);
 
 // routes
 const routes = require('./routes');
