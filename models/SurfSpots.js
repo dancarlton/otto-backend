@@ -1,10 +1,10 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const surfSpotSchema = new mongoose.Schema(
   {
     id: { type: String, required: true, unique: true },
     name: { type: String, required: true },
-    imageUrl: {type: String},
+    imageUrl: { type: String },
     location: {
       region: { type: String }, // city/state/
       lat: { type: Number },
@@ -16,7 +16,7 @@ const surfSpotSchema = new mongoose.Schema(
     },
     distanceFromShoreMiles: { type: Number },
   },
-  { timestamps: true }
-)
+  { timestamps: true },
+);
 
-module.exports = mongoose.model('SurfSpot', surfSpotSchema)
+module.exports = mongoose.model('SurfSpot', surfSpotSchema);

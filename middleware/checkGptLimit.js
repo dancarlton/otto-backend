@@ -1,33 +1,41 @@
-// middleware/checkGptLimit.js
-const ForbiddenError = require('../errors/ForbiddenError')
+const ForbiddenError = require('../errors/ForbiddenError');
+const User = require('../models/Users');
 
-module.exports = (req, res, next) => {
-  const user = req.user
+module.exports = async (req, res, next) => {
+  try {
+    const dbUser = await User.findById(req.user._id);
 
-  const now = new Date()
-  const lastUsed = new Date(user.gptUsage?.lastUsed || 0)
+    if (!dbUser) {
+      throw new ForbiddenError('User not found');
+    }
 
-  const isSameDay =
-    now.getDate() === lastUsed.getDate() &&
-    now.getMonth() === lastUsed.getMonth() &&
-    now.getFullYear() === lastUsed.getFullYear()
+    const now = new Date();
+    const lastUsed = new Date(dbUser.gptUsage?.lastUsed || 0);
 
-  // If it's a new day, reset count
-  if (!isSameDay) {
-    user.gptUsage = { count: 0, lastUsed: now }
+    const isSameDay = now.getDate() === lastUsed.getDate()
+      && now.getMonth() === lastUsed.getMonth()
+      && now.getFullYear() === lastUsed.getFullYear();
+
+    if (!isSameDay) {
+      dbUser.gptUsage = { count: 0, lastUsed: now };
+    }
+
+    if (dbUser.gptUsage.count >= 5) {
+      throw new ForbiddenError(
+        'You’ve reached your daily Otto usage limit. Check back tomorrow!',
+      );
+    }
+
+    dbUser.gptUsage.count += 1;
+    dbUser.gptUsage.lastUsed = now;
+
+    await dbUser.save();
+
+    // Optional: re-attach updated user to request
+    req.user = dbUser;
+
+    next();
+  } catch (err) {
+    next(err);
   }
-
-  // Check limit
-  if (user.gptUsage.count >= 5) {
-    throw new ForbiddenError('You’ve reached your daily Otto usage limit. Check back tomorrow!')
-  }
-
-  // Update usage and move to next middleware
-  user.gptUsage.count += 1
-  user.gptUsage.lastUsed = now
-
-  user
-    .save()
-    .then(() => next())
-    .catch(next)
-}
+};

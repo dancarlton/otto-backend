@@ -1,9 +1,10 @@
-const express = require('express')
-const router = express.Router()
-const { getNearestBuoy, getBuoyData } = require( '../controllers/buoyController' )
-const { validateNearestBuoy } = require( '../middleware/validation' )
+const express = require('express');
 
-router.get('/nearest', validateNearestBuoy, getNearestBuoy)
-router.get('/:stationId', getBuoyData)
+const router = express.Router();
+const { getNearestBuoy, getBuoyData } = require('../controllers/buoyController');
+const { validateNearestBuoy } = require('../middleware/validation');
 
-module.exports = router
+router.get('/nearest', validateNearestBuoy, getNearestBuoy);
+router.get('/:stationId', getBuoyData);
+
+module.exports = router;

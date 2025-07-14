@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const buoySchema = new mongoose.Schema({
   stationId: { type: String, required: true, unique: true },
@@ -16,6 +16,6 @@ const buoySchema = new mongoose.Schema({
     waterTemp: Number, // WTMP
     dominantPeriod: Number,
   },
-})
+});
 
-module.exports = mongoose.model('Buoy', buoySchema)
+module.exports = mongoose.model('Buoy', buoySchema);
