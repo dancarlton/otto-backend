@@ -21,7 +21,7 @@
 ### 1. Clone the Repo
 
 ```
-git clone https://github.com/yourusername/otto-backend.git
+git clone https://github.com/dancarlton/otto-backend.git
 cd otto-backend
 ```
 
