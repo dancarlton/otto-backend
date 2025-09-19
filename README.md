@@ -35,7 +35,7 @@ npm install
 
 Copy `.env.example` to `.env` and fill in the required values:
 
-- `MONGODB_URI`
+- `MONGO_URI`
 - `OPENAI_API_KEY`
 - `JWT_SECRET`
 
