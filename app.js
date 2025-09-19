@@ -15,7 +15,6 @@ app.use(express.json());
 app.use(helmet());
 app.use(limiter);
 
-
 // health is for waking up Render server
 app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "otto-backend" });
@@ -25,7 +24,6 @@ app.get("/health", (req, res) => {
 const routes = require("./routes");
 
 app.use("/api", routes);
-
 
 // error handler (should come after all routes)
 const errorHandler = require("./middleware/errorHandler");
