@@ -20,5 +20,6 @@ module.exports = {
     "no-restricted-syntax": "off",
     "prefer-const": "warn",
     "no-unused-vars": ["warn", { argsIgnorePattern: "next" }],
+    quotes: ["error", "single", { avoidEscape: true }],
   },
 };
