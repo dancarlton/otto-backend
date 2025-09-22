@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
-const limiter = require("./middleware/rateLimiter");
 
 require("dotenv").config();
 
@@ -13,7 +12,6 @@ app.set("trust proxy", 1);
 app.use(cors());
 app.use(express.json());
 app.use(helmet());
-app.use(limiter);
 
 // health is for waking up Render server
 app.get("/health", (req, res) => {
