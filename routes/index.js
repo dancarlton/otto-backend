@@ -1,19 +1,19 @@
-const express = require('express');
+const express = require('express')
 
-const router = express.Router();
+const router = express.Router()
 
-const userRoutes = require('./userRoutes');
-const gptRoutes = require('./gptRoutes');
-const surfSpotRoutes = require('./surfSpotRoutes');
-const buoyRoutes = require('./buoyRoutes');
-const healthRoutes = require('./healthRoutes');
-const auth = require('../middleware/auth');
+const userRoutes = require('./userRoutes')
+const gptRoutes = require('./gptRoutes')
+const surfSpotRoutes = require('./surfSpotRoutes')
+const buoyRoutes = require('./buoyRoutes')
+const healthRoutes = require('./healthRoutes')
+const auth = require('../middleware/auth')
 
 // mount each route under its path
-router.use('/users', userRoutes);
-router.use('/gpt', auth, gptRoutes);
-router.use('/spots', auth, surfSpotRoutes);
-router.use('/buoy', auth, buoyRoutes);
-router.use('/health', healthRoutes);
+router.use('/users', userRoutes)
+router.use('/gpt', auth, gptRoutes)
+router.use('/spots', auth, surfSpotRoutes)
+router.use('/buoy', auth, buoyRoutes)
+router.use('/health', healthRoutes)
 
-module.exports = router;
+module.exports = router

@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require('express')
 
-const router = express.Router();
+const router = express.Router()
 
 router.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: 'otto-backend' });
-});
+  res.json({ status: 'ok', service: 'otto-backend' })
+})
 
-module.exports = router;
+module.exports = router

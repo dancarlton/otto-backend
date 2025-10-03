@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const surfSpotSchema = new mongoose.Schema(
   {
@@ -17,6 +17,6 @@ const surfSpotSchema = new mongoose.Schema(
     distanceFromShoreMiles: { type: Number },
   },
   { timestamps: true },
-);
+)
 
-module.exports = mongoose.model('SurfSpot', surfSpotSchema);
+module.exports = mongoose.model('SurfSpot', surfSpotSchema)

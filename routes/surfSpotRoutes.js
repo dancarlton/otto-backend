@@ -1,16 +1,16 @@
-const express = require('express');
+const express = require('express')
 
-const router = express.Router();
+const router = express.Router()
 const {
   getAllSpots,
   getSpotById,
   getSpotByName,
   getEnrichedSurfSpots,
-} = require('../controllers/surfSpotController');
+} = require('../controllers/surfSpotController')
 
-router.get('/', getAllSpots);
-router.get('/id/:id', getSpotById);
-router.get('/name/:name', getSpotByName);
-router.get('/enriched', getEnrichedSurfSpots);
+router.get('/', getAllSpots)
+router.get('/id/:id', getSpotById)
+router.get('/name/:name', getSpotByName)
+router.get('/enriched', getEnrichedSurfSpots)
 
-module.exports = router;
+module.exports = router

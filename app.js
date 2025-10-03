@@ -1,38 +1,38 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
+const express = require('express')
+const cors = require('cors')
+const helmet = require('helmet')
 
-require("dotenv").config();
+require('dotenv').config()
 
-const app = express();
+const app = express()
 
-app.set("trust proxy", 1);
+app.set('trust proxy', 1)
 
 // middleware
-app.use(cors());
-app.use(express.json());
-app.use(helmet());
+app.use(cors())
+app.use(express.json())
+app.use(helmet())
 
 // health is for waking up Render server
-app.get("/health", (req, res) => {
-  res.json({ status: "ok", service: "otto-backend" });
-});
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', service: 'otto-backend' })
+})
 
 // routes
-const routes = require("./routes");
+const routes = require('./routes')
 
-app.use("/api", routes);
+app.use('/api', routes)
 
 // error handler (should come after all routes)
-const errorHandler = require("./middleware/errorHandler");
+const errorHandler = require('./middleware/errorHandler')
 
-app.use(errorHandler);
+app.use(errorHandler)
 
 // load active buoy stations on startup
-const { loadActiveStations } = require("./utils/findNearbyRSSStations");
+const { loadActiveStations } = require('./utils/findNearbyRSSStations')
 
 loadActiveStations()
-  .then(() => console.log("✅ Buoy station list loaded"))
-  .catch((err) => console.error("❌ Failed to load buoy stations:", err));
+  .then(() => console.log('✅ Buoy station list loaded'))
+  .catch((err) => console.error('❌ Failed to load buoy stations:', err))
 
-module.exports = app;
+module.exports = app
