@@ -13,6 +13,10 @@ app.use(cors())
 app.use(express.json())
 app.use(helmet())
 
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', service: 'otto-backend' })
+})
+
 // health is for waking up Render server
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'otto-backend' })
