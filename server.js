@@ -4,7 +4,20 @@ require('dotenv').config()
 
 const PORT = process.env.PORT || 3001
 
-// Only listen locally, not on Vercel
+let isConnected = false
+
+// Define function outside of the if-block ✅
+async function connectToDatabase() {
+  if (isConnected) return
+  try {
+    const db = await mongoose.connect(process.env.MONGO_URI)
+    isConnected = !!db.connections[0].readyState
+    console.log('✅ Connected to MongoDB (Vercel)')
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err)
+  }
+}
+
 if (process.env.NODE_ENV !== 'production') {
   mongoose
     .connect(process.env.MONGO_URI)
@@ -14,13 +27,11 @@ if (process.env.NODE_ENV !== 'production') {
     })
     .catch((err) => console.error('❌ MongoDB connection error:', err))
 } else {
-  // On Vercel, just export the app — connection will be handled per request
-  if (!mongoose.connection.readyState) {
-    mongoose
-      .connect(process.env.MONGO_URI)
-      .then(() => console.log('✅ Connected to MongoDB (Vercel)'))
-      .catch((err) => console.error('❌ MongoDB connection error:', err))
-  }
+  // Production (Vercel)
+  app.use(async (req, res, next) => {
+    await connectToDatabase()
+    next()
+  })
 
   module.exports = app
 }

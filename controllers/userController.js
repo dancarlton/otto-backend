@@ -1,3 +1,4 @@
+const { mongoose } = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/Users')
@@ -10,6 +11,7 @@ const ConflictError = require('../errors/ConflictError')
 
 // POST /users/login
 exports.login = async (req, res, next) => {
+  console.log('Mongoose state:', mongoose.connection.readyState);
   try {
     const { email, password } = req.body
 
