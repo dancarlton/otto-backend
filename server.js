@@ -4,30 +4,33 @@ require('dotenv').config()
 
 const PORT = process.env.PORT || 3001
 
+// global connection cache
 let isConnected = false
 
-// Define function outside of the if-block ✅
 async function connectToDatabase() {
   if (isConnected) return
   try {
-    const db = await mongoose.connect(process.env.MONGO_URI)
-    isConnected = !!db.connections[0].readyState
-    console.log('✅ Connected to MongoDB (Vercel)')
+    const db = await mongoose.connect(process.env.MONGO_URI, {
+      bufferCommands: false, // prevent buffering
+    })
+    isConnected = db.connections[0].readyState === 1
+    console.log('✅ MongoDB connected (Vercel)')
   } catch (err) {
-    console.error('❌ MongoDB connection error:', err)
+    console.error('❌ Mongo connection failed:', err.message)
   }
 }
 
 if (process.env.NODE_ENV !== 'production') {
+  // local dev
   mongoose
     .connect(process.env.MONGO_URI)
     .then(() => {
-      console.log('✅ Connected to MongoDB (local)')
+      console.log('✅ MongoDB connected (Local)')
       app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
     })
     .catch((err) => console.error('❌ MongoDB connection error:', err))
 } else {
-  // Production (Vercel)
+  // serverless env (Vercel)
   app.use(async (req, res, next) => {
     await connectToDatabase()
     next()
