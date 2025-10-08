@@ -18,14 +18,15 @@ app.get('/', (req, res) => {
 })
 
 // health is for waking up Render server
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: 'otto-backend' })
-})
+// app.get('/health', (req, res) => {
+//   res.json({ status: 'ok', service: 'otto-backend' })
+// })
 
 // routes
 const routes = require('./routes')
 
 app.use('/api', routes)
+console.log('✅ Otto backend app loaded!')
 
 // error handler (should come after all routes)
 const errorHandler = require('./middleware/errorHandler')
